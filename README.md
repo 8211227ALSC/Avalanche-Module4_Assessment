@@ -6,15 +6,11 @@ The provided facilitates token-based interactions within the gaming environment,
 
 Key features include:
 
-Token minting: Owners can create new tokens and distribute them to specific addresses.
-
-Token transfer: Holders can transfer tokens to other addresses.
-
-In-game shop: Players can redeem tokens for items listed in the shop, each with a corresponding price.
-
-Token burning: Holders can destroy (burn) tokens, removing them from circulation.
-
-Ownership management: The contract owner can update item prices, renounce ownership, and retain administrative control over the contract.
+1. **Token minting:** Owners can create new tokens and distribute them to specific addresses.
+2. **Token transfer:** Holders can transfer tokens to other addresses.
+3. **In-game shop:** Players can redeem tokens for items listed in the shop, each with a corresponding price.
+4. **Token burning:** Holders can destroy (burn) tokens, removing them from circulation.
+5. **Ownership management:** The contract owner can update item prices, renounce ownership, and retain administrative control over the contract.
 
 Overall, the contract facilitates token-based interactions within the gaming environment, supporting rewards, transactions, and in-game purchases.
 
