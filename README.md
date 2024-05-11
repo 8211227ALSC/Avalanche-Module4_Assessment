@@ -1,8 +1,17 @@
-# ERC20Tokens
-This project defines a smart contract named MyToken that implements the ERC20 standard token functionality. This contract creates a basic ERC20 token named "MyToken", where the owner can mint new tokens and users can burn their own tokens.
+# Degen Token (ERC-20): Unlocking the Future of Gaming
+The DegenToken contract is an ERC20-compliant token implemented on the Ethereum blockchain. It enables the creation, transfer, and management of tokens within a decentralized gaming ecosystem.
 
 ## Description
-The provided Solidity code defines a smart contract called MyToken which serves as an implementation of the ERC20 standard token. It begins with directives specifying the compiler version and license. The contract imports the ERC20.sol file from the OpenZeppelin library to inherit the standard ERC20 functionality. Within the contract, there's a state variable owner, representing the address of the contract owner. The onlyOwner modifier is used to restrict certain functions to be accessible only by the contract owner. In the constructor, the contract initializes by setting the owner variable to the address that deployed the contract and mints an initial supply of tokens to that address. The mint function enables the contract owner to mint additional tokens and distribute them to specified addresses. Conversely, the burn function permits any user to burn a specified amount of their own tokens, thus reducing the total token supply. In summary, this contract provides a basic ERC20 token functionality where the owner can mint tokens and users can burn their own tokens as needed.
+The provided facilitates token-based interactions within the gaming environment, supporting rewards, transactions, and in-game purchases.
+
+Key features include:
+
+Token minting: Owners can create new tokens and distribute them to specific addresses.
+Token transfer: Holders can transfer tokens to other addresses.
+In-game shop: Players can redeem tokens for items listed in the shop, each with a corresponding price.
+Token burning: Holders can destroy (burn) tokens, removing them from circulation.
+Ownership management: The contract owner can update item prices, renounce ownership, and retain administrative control over the contract.
+Overall, the contract facilitates token-based interactions within the gaming environment, supporting rewards, transactions, and in-game purchases.
 
 ### Executing Program
 To run this program, you can use Remix, an online Solidity IDE. To get started, go to the Remix website at https://remix.ethereum.org/.
@@ -12,40 +21,60 @@ Once you are on the Remix website, create a new file by clicking on the "+" icon
 
 ```
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract MyToken is ERC20 {
-    address public tokenOwner;
+contract DegenToken is ERC20, Ownable {
+    using SafeMath for uint256;
 
-    modifier onlyOwner() {
-        require(msg.sender == tokenOwner, "Only owner can call this function");
-        _;
+    mapping(uint256 => uint256) public itemPrices;
+
+    constructor() ERC20("Degen", "DGN") Ownable(msg.sender) {
+        itemPrices[1] = 100;
+        itemPrices[2] = 200;
+        itemPrices[3] = 50;
+        itemPrices[4] = 10;
     }
 
-    constructor() ERC20("MyToken", "MTK") {
-        tokenOwner = msg.sender;
-        _mint(msg.sender, 1000000 * 10 ** decimals());
+    function mintTokens(address _to, uint256 _amount) public onlyOwner {
+        _mint(_to, _amount);
     }
 
-    function mint(address to, uint256 amount) external onlyOwner {
-        _mint(to, amount);
+    function transferTokens(address _to, uint256 _amount) public {
+        require(balanceOf(msg.sender) >= _amount, "Transfer Failed: Insufficient balance.");
+        _transfer(msg.sender, _to, _amount);
     }
 
-    function burn(uint256 amount) external {
-        _burn(msg.sender, amount);
+    function listShopItems() external pure returns (string memory) {
+        return "The items on sale: {1} Rare Degen Sword (100) {2} Legendary Degen Armor (200) {3} Epic Degen Potion (50) {4} Common Degen Scroll (10)";
     }
 
-    function transfer(address to, uint256 amount) public override returns (bool) {
-        _transfer(_msgSender(), to, amount);
-        return true;
+    function redeemTokens(uint256 _item) public {
+        require(itemPrices[_item] > 0 && _item <= 4, "Item is not available.");
+        require(balanceOf(msg.sender) >= itemPrices[_item], "Redeem Failed: Insufficient balance.");
+        transfer(owner(), itemPrices[_item]);
+    }
+    
+    function burnTokens(uint256 _amount) public {
+        require(balanceOf(msg.sender) >= _amount, "Burn Failed: Insufficient balance.");
+        _burn(msg.sender, _amount);
     }
 
-    function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
-        _transfer(sender, recipient, amount);
-        _approve(sender, _msgSender(), allowance(sender, _msgSender()) - amount);
-        return true;
+    function getBalance() external view returns (uint256) {
+        return balanceOf(msg.sender);
+    }
+
+    function updateItemPrice(uint256 _item, uint256 _price) public onlyOwner {
+        require(_item <= 4, "Item is not available.");
+        itemPrices[_item] = _price;
+    }
+
+    function renounceOwnership() public virtual onlyOwner override{
+        emit OwnershipTransferred(owner(), address(0));
+        super.renounceOwnership();
     }
 }
 ```
@@ -53,14 +82,6 @@ contract MyToken is ERC20 {
 To compile the code, click on the "Solidity Compiler" tab in the left-hand sidebar. Make sure the "Compiler" option is set to "0.8.18" (or another compatible version), and then click on the "Compile myToken.sol" button.
 
 To deploy the contract, click on the "Deploy and Run Transactions" button. This will open a new window that allows you to deploy the contract. Do not forget to select the “MyToken” contract before deploying.
-
-In the deployment window “Deployed Contracts”, set the parameters for the balance, mint, and burn functions.
-
-To mint new tokens, input the address of the recipient and the number of tokens you want to mint and click transact.
-
-To burn tokens, input the address of the recipient and the number of tokens you want to burn and click transact.
-
-To see current balances of the address, input the address of the recipient and the number of tokens you want to mint and click call. You can also see the total supply by clicking the “totalSupply” button.
 
 #### Authors
 NTCIAN Ann Loraine S. Ching | Discord @annching
