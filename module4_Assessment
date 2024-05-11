@@ -1,0 +1,57 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+
+contract DegenToken is ERC20, Ownable {
+    using SafeMath for uint256;
+
+    mapping(uint256 => uint256) public itemPrices;
+
+    constructor() ERC20("Degen", "DGN") Ownable(msg.sender) {
+        itemPrices[1] = 100;
+        itemPrices[2] = 200;
+        itemPrices[3] = 50;
+        itemPrices[4] = 10;
+    }
+
+    function mintTokens(address _to, uint256 _amount) public onlyOwner {
+        _mint(_to, _amount);
+    }
+
+    function transferTokens(address _to, uint256 _amount) public {
+        require(balanceOf(msg.sender) >= _amount, "Transfer Failed: Insufficient balance.");
+        _transfer(msg.sender, _to, _amount);
+    }
+
+    function listShopItems() external pure returns (string memory) {
+        return "The items on sale: {1} Rare Degen Sword (100) {2} Legendary Degen Armor (200) {3} Epic Degen Potion (50) {4} Common Degen Scroll (10)";
+    }
+
+    function redeemTokens(uint256 _item) public {
+        require(itemPrices[_item] > 0 && _item <= 4, "Item is not available.");
+        require(balanceOf(msg.sender) >= itemPrices[_item], "Redeem Failed: Insufficient balance.");
+        transfer(owner(), itemPrices[_item]);
+    }
+    
+    function burnTokens(uint256 _amount) public {
+        require(balanceOf(msg.sender) >= _amount, "Burn Failed: Insufficient balance.");
+        _burn(msg.sender, _amount);
+    }
+
+    function getBalance() external view returns (uint256) {
+        return balanceOf(msg.sender);
+    }
+
+    function updateItemPrice(uint256 _item, uint256 _price) public onlyOwner {
+        require(_item <= 4, "Item is not available.");
+        itemPrices[_item] = _price;
+    }
+
+    function renounceOwnership() public virtual onlyOwner override{
+        emit OwnershipTransferred(owner(), address(0));
+        super.renounceOwnership();
+    }
+}
