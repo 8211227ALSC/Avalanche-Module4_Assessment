@@ -2,7 +2,7 @@
 The DegenToken contract is an ERC20-compliant token implemented on the Ethereum blockchain. It enables the creation, transfer, and management of tokens within a decentralized gaming ecosystem.
 
 ## Description
-The provided facilitates token-based interactions within the gaming environment, supporting rewards, transactions, and in-game purchases.
+The provided code facilitates token-based interactions within the gaming environment, supporting rewards, transactions, and in-game purchases.
 
 Key features include:
 
